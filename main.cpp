@@ -1,42 +1,64 @@
 #include <iostream>
-#include "linked_queue.h"
+#include <cctype>
 #include "linked_stack.h"
 #include <string>
+#include <fstream>
+#include <cstddef>
+#include <cstring>
+#include <stdio.h>
 
+using namespace std;
 
 int main() {
 
     string xmlfilename;
-    std::cin >> xmlfilename;  // entrada
+    //std::cin >> xmlfilename;  // entrada
 
-    ifstream myfile ("myfile.xml");
+    ifstream myfile ("dataset01.xml");
 
-    auto pile = structures::LinkedQueue<char> {}
+    auto pile = structures::LinkedStack<string> {};
     size_t i;
     size_t e;
     string tag;
+    string line;
     size_t pos = 0;
-    int line = 0;
+    int lenght = 0;
+
+    cout << "funciona" << "\n" << endl;
 
     if(myfile.is_open()){
-      while(xmlfilename.getline(xmlfilename, line))  {
-        i = xmlfilename.find_first_of('<', pos);
-        e = xmlfilename.find_first_of('>', pos);
+      while(getline(myfile, line))  {
+        i = line.find_first_of('<', pos);
+        e = line.find_first_of('>', pos);
+        printf("continua funfando");
         lenght = e-i;
-        tag = xmlfilename.substr(i,lenght);
-        if (xmlfilename.find('/')) {
-          tag = xmlfilename.substr(i+1,lenght-1);
-          if (strcmp(tag, pile.top()) == 0) {
-            pile.pop();
+        tag =   line.substr(i,lenght);
+        printf("tag funciona");
+        if (tag.find('/')) {
+          tag = line.substr(i+1,lenght-1);
+          if (pile.empty()) {
+            printf("aki tbm da merda");
           } else {
-            printf("aki da merda");
+            printf("ta convertendo pra char*");
+            auto first = tag.c_str();
+            auto second = pile.top().c_str();
+            if (strcmp(first, second) ==  0) {
+              cout << tag << "\n" << endl;
+              pile.pop();
+            } else {
+              printf("aki da merda");
+            }
           }
         } else {
+
           pile.push(tag);
         }
-
+        pos = e;
+      }
+      if (pile.empty()) {
+        printf("merda d novo");
       }
     }
 
-    return 0;
+  return 0;
 }

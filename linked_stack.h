@@ -1,100 +1,110 @@
 //! Copyright [2018] <Marcelo Dutra Mendonça>
-namespace structures {
+
+#pragma once
 
 #include <memory>
 #include <stdexcept>
 
-template<typename T>
+namespace structures {
 
-//!...
+template<typename T>
+//! Main class
 class LinkedStack {
  public:
-    //!...
+    //! Default constructor
     LinkedStack() = default;
-    //!...
+
+    //! Destructor
     ~LinkedStack() = default;
 
+    //! Clear stack
     void clear() {
-      this->size_ = 0;
-      this->top = nullptr;
-    } // limpa pilha
+        this->size_ = 0;
+        this->top_ = nullptr;
+    }
 
+    //! Push element on top of stack
     void push(const T& data) {
-      Node* n = new Node(data);
-      if (n == nullptr) {
-          throw std::out_of_range("Pilha cheia");
-      }
-      n->next(top_);
-      this->top_ = n;
-      this->size_++;
-    } // empilha
+        if (this->empty()) {
+            this->top_ = std::make_shared<Node>(data);
 
+        } else {
+            this->top_ = std::make_shared<Node>(data, this->top_);
+        }
+
+        this->size_ += 1;
+    }
+
+    //! Pop element on the top of stack
     T pop() {
-      if( empty() ) {
-        throw std::out_of_range("Pilha vazia");
-      } else {
-      auto tmp = this->top_;
-      this->top_ = this->top_->next();
-      this->size_--;
-      return tmp->data();
-      }
-    } // desempilha
+        if (this->empty()) {
+            throw std::out_of_range("Empty list");
+        }
+        auto tmp = this->top_;
+        this->top_ = this->top_->next();
+        this->size_--;
+        return tmp->data();
+    }
 
+    //! Return reference to the top element
     T& top() const {
-      auto out = top_->data();
-    } // dado no topo
+        if (this->empty()) {
+            throw std::out_of_range("Empty stack");
+        }
 
+        return this->top_->data();
+    }
+
+    //! Check if stack is empty
     bool empty() const {
-      if (size() == 0) {
-        return true;
-      } else {
-        return false;
-      }
-    } // pilha vazia
+        return this->size() == 0;
+    }
 
-    std::size_t size() const {
-      return size_;
-    } // tamanho da pilha
+    //! Return size of the list
+    int size() const {
+        return this->size_;
+    }
 
  private:
-    class Node {
+    class Node {  // Elemento
      public:
-       explicit Node(const T& data):
-           data_{data}
-       {}
+        explicit Node(const T& data):
+            data_{data}
+        {}
 
-       Node(const T& data, Node* next):
-           data_{data},
-           next_{next}
-       {}
+        Node(const T& data, std::shared_ptr<Node> next):
+            data_{data}
+        {
+            next_ = next;
+        }
 
-       T& data() {  // getter: dado
-           return data_;
-       }
+        T& data() {
+            return data_;
+        }
 
-       const T& data() const {  // getter const: dado
-           return data_;
-       }
+        const T& data() const {
+            return data_;
+        }
 
-       Node* next() {  // getter: próximo
-           return next_;
-       }
+        std::shared_ptr<Node> next() {
+            return next_;
+        }
 
-       const Node* next() const {  // getter const: próximo
-           return next_;
-       }
+        const std::shared_ptr<Node> next() const {
+            return next_;
+        }
 
-       void next(Node* node) {  // setter: próximo
-           next_ = node;
-       }
+        void next(std::shared_ptr<Node> node) {
+            next_ = node;
+        }
 
      private:
         T data_;
-        Node* next_;
+        std::shared_ptr<Node> next_{nullptr};
     };
 
-    Node* top_; // nodo-topo
-    int size_ = 0; // tamanho
+    std::shared_ptr<Node> top_{nullptr};
+    int size_ = 0;
 };
 
 } // namespace structures
