@@ -10,7 +10,7 @@
 using namespace std;
 
 string readfilename() {
-  cout << "Digite o nome do arquivo xml a ser lido: " << end1;
+  cout << "Digite o nome do arquivo xml a ser lido: " << endl;
   string xmlfile;
   cin >> xmlfile;
   return xmlfile;
@@ -26,10 +26,7 @@ int main() {
     ifstream myfile;
     myfile.open(xmlfilename);
 
-    //Cria a pilha
-    auto pile = structures::LinkedStack<string> {};
-
-    //Parser deve ser chamado aqui(como fazer?)
+    //parser(myfile);
 
     cout << "funciona" << "\n" << endl;
 
@@ -37,17 +34,18 @@ int main() {
   return 0;
 }
 
-void parser() {
+void parser(ifstream file) {
+  auto pile = structures::LinkedStack<string> {};
   size_t i;
   size_t e;
   string tag;
   string line;
   size_t pos = 0;
   int lenght = 0;
-  if (!myfile.is_open()) {
+  if (!file.is_open()) {
     throw invalid_argument("O arquivo não pode ser aberto.");
   } else {
-    while(getline(myfile, line))  {
+    while(getline(file, line))  {
       i = line.find_first_of('<', pos);
       e = line.find_first_of('>', pos);
       printf("continua funfando");
@@ -80,4 +78,5 @@ void parser() {
       return;
     }
   } //Fim do else "arquivo aberto"
-}  //Fim da função parser()
+} //Fim da função parser()
+
