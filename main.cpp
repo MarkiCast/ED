@@ -11,54 +11,63 @@ using namespace std;
 
 int main() {
 
+    cout << "Insira nome do arquivo: " << endl;
+
     string xmlfilename;
-    //std::cin >> xmlfilename;  // entrada
+    std::cin >> xmlfilename;  // entrada
 
-    ifstream myfile ("dataset01.xml");
+    ifstream myfile;
+    myfile.open(xmlfilename);
+    if(!myfile.is_open()) {
+      throw invalid_argument("Arquivo não pode ser aberto");
+    }
 
-    auto pile = structures::LinkedStack<string> {};
+    structures::LinkedStack<string> pilha;
     size_t i;
     size_t e;
     string tag;
     string line;
     size_t pos = 0;
-    int lenght = 0;
+    int lenght;
 
-    cout << "funciona" << "\n" << endl;
+    while(getline(myfile, line))  {
+      i = line.find_first_of('<',pos);
+      e = line.find_first_of('>',pos);
 
-    if(myfile.is_open()){
-      while(getline(myfile, line))  {
-        i = line.find_first_of('<', pos);
-        e = line.find_first_of('>', pos);
-        printf("continua funfando");
-        lenght = e-i;
-        tag =   line.substr(i,lenght);
-        printf("tag funciona");
-        if (tag.find('/')) {
-          tag = line.substr(i+1,lenght-1);
-          if (pile.empty()) {
-            printf("aki tbm da merda");
-          } else {
-            printf("ta convertendo pra char*");
-            auto first = tag.c_str();
-            auto second = pile.top().c_str();
-            if (strcmp(first, second) ==  0) {
-              cout << tag << "\n" << endl;
-              pile.pop();
-            } else {
-              printf("aki da merda");
-            }
-          }
+      tag = line.substr(i, e-i);
+
+      if (tag.find('/')) {
+        tag = line.substr(i+1, e-i-1);
+        if (pilha.empty()) {
+          throw invalid_argument("Erro no parsing do arquivo");
         } else {
-
-          pile.push(tag);
+          auto first = tag.c_str();
+          auto second = pilha.top().c_str();
+          if (strcmp(first, second) ==  0) {
+            cout << tag << "\n" << endl;
+            pilha.pop();
+          } else {
+            throw invalid_argument("Erro no parsing do arquivo");
+          }
         }
-        pos = e;
+      } else {
+        pilha.push(tag);
       }
-      if (pile.empty()) {
-        printf("merda d novo");
-      }
+
+      pos = e;
+    } //  Fim do while
+
+    if (pilha.empty()) {
+      cout << "Passou no parsing" << endl;
+    } else {
+      throw invalid_argument("Erro no parsing do arquivo");
     }
+
+
+
+
+
 
   return 0;
 }
+
